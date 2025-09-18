@@ -19,4 +19,28 @@ const register = async (req, res) => {
     }
 };
 
-module.exports = { register };
+const login = async (req, res) => {
+    const { email, password } = req.body;
+
+    try {
+        const token = await authService.loginUser(email, password);
+
+        if (!token) {
+            // To distinguish between not found and wrong password, service can be modified
+            // For simplicity, we can check user existence first
+            const userExists = await db.query('SELECT id FROM users WHERE email = $1', [email]);
+            if (userExists.rows.length === 0) {
+                return res.status(404).json({ message: 'User not found' });
+            }
+            return res.status(401).json({ message: 'Invalid credentials' });
+        }
+
+        res.status(200).json({ token });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
+const db = require('../../config/db'); 
+
+module.exports = { register, login };
