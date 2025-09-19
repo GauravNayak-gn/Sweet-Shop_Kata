@@ -1,6 +1,8 @@
+import { useState, useEffect, useCallback } from 'react';
 import { useState, useEffect } from 'react';
 import api from '../services/api';
 import SweetCard from '../components/SweetCard';
+import SearchFilter from '../components/SearchFilter';
 
 const dashboardStyle = {
     display: 'flex',
@@ -12,21 +14,24 @@ const DashboardPage = () => {
     const [sweets, setSweets] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const [searchParams, setSearchParams] = useState({});
+
+    const fetchSweets = useCallback(async () => {
+        try {
+            setLoading(true);
+            // Use the search endpoint with our params
+            const response = await api.get('/sweets/search', { params: searchParams });
+            setSweets(response.data);
+        } catch (err) {
+            setError('Failed to fetch sweets.');
+        } finally {
+            setLoading(false);
+        }
+    }, [searchParams]); // Re-run only when searchParams change
 
     useEffect(() => {
-        const fetchSweets = async () => {
-            try {
-                setLoading(true);
-                const response = await api.get('/sweets');
-                setSweets(response.data);
-            } catch (err) {
-                setError('Failed to fetch sweets.');
-            } finally {
-                setLoading(false);
-            }
-        };
         fetchSweets();
-    }, []);
+    }, [fetchSweets]);
 
     const handlePurchase = (sweetId) => {
         setSweets(prevSweets =>
@@ -36,16 +41,30 @@ const DashboardPage = () => {
         );
     };
 
+
+   const handleSearch = (params) => {
+        // Filter out empty strings from the params object
+        const filteredParams = Object.fromEntries(
+            Object.entries(params).filter(([_, v]) => v !== '')
+        );
+        setSearchParams(filteredParams);
+    };
+
     if (loading) return <p>Loading sweets...</p>;
     if (error) return <p style={{ color: 'red' }}>{error}</p>;
 
     return (
         <div>
             <h2>Our Sweets</h2>
+            <SearchFilter onSearch={handleSearch} /> {/* Add the component here */}
             <div style={dashboardStyle}>
-                {sweets.map(sweet => (
-                    <SweetCard key={sweet.id} sweet={sweet} onPurchase={handlePurchase} />
-                ))}
+                {sweets.length > 0 ? (
+                    sweets.map(sweet => (
+                        <SweetCard key={sweet.id} sweet={sweet} onPurchase={handlePurchase} />
+                    ))
+                ) : (
+                    <p>No sweets found matching your criteria.</p>
+                )}
             </div>
         </div>
     );
