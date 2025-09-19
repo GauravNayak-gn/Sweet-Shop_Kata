@@ -10,7 +10,7 @@ const cardStyle = {
     boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
 };
 
-const SweetCard = ({ sweet, onPurchase,onDelete  }) => {
+const SweetCard = ({ sweet, onPurchase,onDelete, onEdit   }) => {
     const { user } = useAuth(); // Get the current user
     const handlePurchaseClick = async () => {
         try {
@@ -43,7 +43,10 @@ const SweetCard = ({ sweet, onPurchase,onDelete  }) => {
             </button>
             {/* --- Admin Section --- */}
             {user?.role === 'admin' && (
-                <div style={{ marginTop: '1rem', borderTop: '1px solid #eee', paddingTop: '0.5rem' }}>
+                <div style={{ marginTop: '1rem', borderTop: '1px solid #eee', paddingTop: '0.5rem', display: 'flex', gap: '0.5rem' }}>
+                    <button style={{ backgroundColor: '#ff9800', color: 'white' }} onClick={onEdit}>
+                        Edit
+                    </button>
                     <button style={{ backgroundColor: '#f44336', color: 'white' }} onClick={handleDeleteClick}>
                         Delete
                     </button>
