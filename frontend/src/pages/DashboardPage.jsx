@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useState, useEffect } from 'react';
 import api from '../services/api';
 import SweetCard from '../components/SweetCard';
 import SearchFilter from '../components/SearchFilter';
@@ -50,17 +49,26 @@ const DashboardPage = () => {
         setSearchParams(filteredParams);
     };
 
+    const handleDelete = (sweetId) => {
+        setSweets(prevSweets => prevSweets.filter(sweet => sweet.id !== sweetId));
+    };
+
     if (loading) return <p>Loading sweets...</p>;
     if (error) return <p style={{ color: 'red' }}>{error}</p>;
 
     return (
         <div>
             <h2>Our Sweets</h2>
-            <SearchFilter onSearch={handleSearch} /> {/* Add the component here */}
+            <SearchFilter onSearch={handleSearch} />
             <div style={dashboardStyle}>
                 {sweets.length > 0 ? (
                     sweets.map(sweet => (
-                        <SweetCard key={sweet.id} sweet={sweet} onPurchase={handlePurchase} />
+                        <SweetCard
+                            key={sweet.id}
+                            sweet={sweet}
+                            onPurchase={handlePurchase}
+                            onDelete={handleDelete} // Pass the delete handler
+                        />
                     ))
                 ) : (
                     <p>No sweets found matching your criteria.</p>

@@ -1,4 +1,5 @@
 import api from '../services/api';
+import useAuth from '../hooks/useAuth';
 
 const cardStyle = {
     border: '1px solid #ddd',
@@ -9,13 +10,25 @@ const cardStyle = {
     boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
 };
 
-const SweetCard = ({ sweet, onPurchase }) => {
+const SweetCard = ({ sweet, onPurchase,onDelete  }) => {
+    const { user } = useAuth(); // Get the current user
     const handlePurchaseClick = async () => {
         try {
             await api.post(`/sweets/${sweet.id}/purchase`);
             onPurchase(sweet.id); // Notify the parent component to update state
         } catch (error) {
             alert('Could not complete purchase.'); // Simple error handling
+        }
+    };
+
+     const handleDeleteClick = async () => {
+        if (window.confirm(`Are you sure you want to delete ${sweet.name}?`)) {
+            try {
+                await api.delete(`/sweets/${sweet.id}`);
+                onDelete(sweet.id); // Notify parent to update the list
+            } catch (error) {
+                alert('Could not delete sweet.');
+            }
         }
     };
 
@@ -28,6 +41,14 @@ const SweetCard = ({ sweet, onPurchase }) => {
             <button onClick={handlePurchaseClick} disabled={sweet.quantity === 0}>
                 Purchase
             </button>
+            {/* --- Admin Section --- */}
+            {user?.role === 'admin' && (
+                <div style={{ marginTop: '1rem', borderTop: '1px solid #eee', paddingTop: '0.5rem' }}>
+                    <button style={{ backgroundColor: '#f44336', color: 'white' }} onClick={handleDeleteClick}>
+                        Delete
+                    </button>
+                </div>
+            )}
         </div>
     );
 };
