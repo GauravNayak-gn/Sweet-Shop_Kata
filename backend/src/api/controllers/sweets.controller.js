@@ -51,4 +51,36 @@ const searchSweets = async (req, res) => {
     }
 };
 
-module.exports = { getAllSweets, addSweet, updateSweet, deleteSweet, searchSweets };
+const purchase = async (req, res) => {
+    try {
+        const sweet = await sweetService.purchaseSweet(req.params.id);
+        if (!sweet) {
+            // This could be because it's not found or out of stock
+            const existingSweet = await sweetService.findSweetById(req.params.id);
+            if (!existingSweet) return res.status(404).json({ message: 'Sweet not found' });
+            return res.status(400).json({ message: 'Sweet is out of stock' });
+        }
+        res.status(200).json(sweet);
+    } catch (error) {
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
+const restock = async (req, res) => {
+    const { amount } = req.body;
+    if (typeof amount !== 'number' || amount <= 0) {
+        return res.status(400).json({ message: 'Invalid restock amount' });
+    }
+    try {
+        const sweet = await sweetService.restockSweet(req.params.id, amount);
+         if (!sweet) {
+            return res.status(404).json({ message: 'Sweet not found' });
+        }
+        res.status(200).json(sweet);
+    } catch (error) {
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
+
+module.exports = { getAllSweets, addSweet, updateSweet, deleteSweet, searchSweets, purchase, restock  };
