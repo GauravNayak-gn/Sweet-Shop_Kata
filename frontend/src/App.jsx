@@ -1,4 +1,7 @@
 import { Routes, Route } from 'react-router-dom';
+import DashboardPage from './pages/DashboardPage'; // Create this file next
+import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
 
 // Create placeholder pages for now
 const DashboardPage = () => <h2>Dashboard</h2>;
