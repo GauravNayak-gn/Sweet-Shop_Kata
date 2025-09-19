@@ -18,4 +18,16 @@ const addSweet = async (req, res) => {
     }
 };
 
-module.exports = { getAllSweets, addSweet };
+const updateSweet = async (req, res) => {
+    try {
+        const updatedSweet = await sweetService.updateSweetById(req.params.id, req.body);
+        if (!updatedSweet) {
+            return res.status(404).json({ message: 'Sweet not found' });
+        }
+        res.status(200).json(updatedSweet);
+    } catch (error) {
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
+module.exports = { getAllSweets, addSweet, updateSweet };

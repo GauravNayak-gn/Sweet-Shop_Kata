@@ -13,4 +13,13 @@ const createSweet = async ({ name, category, price, quantity }) => {
     return result.rows[0];
 };
 
-module.exports = { findAllSweets, createSweet };
+const updateSweetById = async (id, sweetData) => {
+    const { name, category, price, quantity } = sweetData;
+    const result = await db.query(
+        'UPDATE sweets SET name = $1, category = $2, price = $3, quantity = $4 WHERE id = $5 RETURNING *',
+        [name, category, price, quantity, id]
+    );
+    return result.rows[0]; // Will be undefined if ID not found
+};
+
+module.exports = { findAllSweets, createSweet, updateSweetById };

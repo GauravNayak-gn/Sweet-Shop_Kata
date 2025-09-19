@@ -6,5 +6,6 @@ const router = express.Router();
 
 router.get('/', protect, sweetsController.getAllSweets);
 router.post('/', protect, isAdmin, sweetsController.addSweet);
+router.put('/:id', protect, isAdmin, sweetsController.updateSweet);
 
 module.exports = router;
