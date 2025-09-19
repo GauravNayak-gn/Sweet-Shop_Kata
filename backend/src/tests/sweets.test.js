@@ -79,6 +79,7 @@ describe('Sweets API', () => {
         });
     });
 
+    // PUT /api/sweets/:id
     describe('PUT /api/sweets/:id', () => {
         let sweetId;
 
@@ -121,6 +122,46 @@ describe('Sweets API', () => {
                 .put(`/api/sweets/${nonExistentId}`)
                 .set('Authorization', `Bearer ${adminToken}`)
                 .send({ name: 'Ghost Candy' });
+            
+            expect(res.statusCode).toEqual(404);
+        });
+    });
+
+    // DELETE /api/sweets/:id
+    describe('DELETE /api/sweets/:id', () => {
+        let sweetId;
+
+        beforeEach(async () => {
+            const result = await db.query("INSERT INTO sweets (name, category, price, quantity) VALUES ('Temporary Candy', 'Ephemeral', 1.00, 1) RETURNING id");
+            sweetId = result.rows[0].id;
+        });
+
+        it('should return 403 if a regular user tries to delete', async () => {
+            const res = await request(app)
+                .delete(`/api/sweets/${sweetId}`)
+                .set('Authorization', `Bearer ${userToken}`);
+            
+            expect(res.statusCode).toEqual(403);
+        });
+
+        it('should delete a sweet if user is an admin', async () => {
+            const res = await request(app)
+                .delete(`/api/sweets/${sweetId}`)
+                .set('Authorization', `Bearer ${adminToken}`);
+            
+            expect(res.statusCode).toEqual(200);
+            expect(res.body.message).toBe('Sweet deleted successfully');
+
+            // Verify it's actually gone from the DB
+            const verifyRes = await db.query('SELECT * FROM sweets WHERE id = $1', [sweetId]);
+            expect(verifyRes.rows.length).toBe(0);
+        });
+
+        it('should return 404 if sweet ID to delete does not exist', async () => {
+            const nonExistentId = 9999;
+            const res = await request(app)
+                .delete(`/api/sweets/${nonExistentId}`)
+                .set('Authorization', `Bearer ${adminToken}`);
             
             expect(res.statusCode).toEqual(404);
         });
