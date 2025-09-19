@@ -27,4 +27,32 @@ const deleteSweetById = async (id) => {
     return result.rowCount; // Returns 1 if successful, 0 if not found
 };
 
-module.exports = { findAllSweets, createSweet, updateSweetById, deleteSweetById };
+const findSweetsByCriteria = async (criteria) => {
+    let query = 'SELECT * FROM sweets WHERE 1=1';
+    const params = [];
+    let paramIndex = 1;
+
+    if (criteria.name) {
+        query += ` AND name ILIKE $${paramIndex++}`;
+        params.push(`%${criteria.name}%`);
+    }
+    if (criteria.category) {
+        query += ` AND category ILIKE $${paramIndex++}`;
+        params.push(`%${criteria.category}%`);
+    }
+    if (criteria.minPrice) {
+        query += ` AND price >= $${paramIndex++}`;
+        params.push(criteria.minPrice);
+    }
+    if (criteria.maxPrice) {
+        query += ` AND price <= $${paramIndex++}`;
+        params.push(criteria.maxPrice);
+    }
+    
+    query += ' ORDER BY name ASC'; // Consistent ordering for tests
+    
+    const result = await db.query(query, params);
+    return result.rows;
+};
+
+module.exports = { findAllSweets, createSweet, updateSweetById, deleteSweetById, findSweetsByCriteria  };

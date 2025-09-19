@@ -42,4 +42,13 @@ const deleteSweet = async (req, res) => {
     }
 };
 
-module.exports = { getAllSweets, addSweet, updateSweet, deleteSweet };
+const searchSweets = async (req, res) => {
+    try {
+        const sweets = await sweetService.findSweetsByCriteria(req.query);
+        res.status(200).json(sweets);
+    } catch (error) {
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
+module.exports = { getAllSweets, addSweet, updateSweet, deleteSweet, searchSweets };
