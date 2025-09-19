@@ -28,6 +28,14 @@ const DashboardPage = () => {
         fetchSweets();
     }, []);
 
+    const handlePurchase = (sweetId) => {
+        setSweets(prevSweets =>
+            prevSweets.map(sweet =>
+                sweet.id === sweetId ? { ...sweet, quantity: sweet.quantity - 1 } : sweet
+            )
+        );
+    };
+
     if (loading) return <p>Loading sweets...</p>;
     if (error) return <p style={{ color: 'red' }}>{error}</p>;
 
@@ -36,7 +44,7 @@ const DashboardPage = () => {
             <h2>Our Sweets</h2>
             <div style={dashboardStyle}>
                 {sweets.map(sweet => (
-                    <SweetCard key={sweet.id} sweet={sweet} />
+                    <SweetCard key={sweet.id} sweet={sweet} onPurchase={handlePurchase} />
                 ))}
             </div>
         </div>
