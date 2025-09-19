@@ -217,4 +217,62 @@ describe('Sweets API', () => {
         });
     });
 
+    // POST /api/sweets/:id/purchase
+    describe('POST /api/sweets/:id/purchase', () => {
+        let sweetId;
+        beforeEach(async () => {
+            const result = await db.query("INSERT INTO sweets (name, category, price, quantity) VALUES ('Lollipop', 'Candy', 0.99, 10) RETURNING id");
+            sweetId = result.rows[0].id;
+        });
+
+        it('should decrease the quantity of a sweet on purchase', async () => {
+            const res = await request(app)
+                .post(`/api/sweets/${sweetId}/purchase`)
+                .set('Authorization', `Bearer ${userToken}`);
+            
+            expect(res.statusCode).toEqual(200);
+            expect(res.body.quantity).toBe(9);
+        });
+
+        it('should return 400 if trying to purchase an out-of-stock sweet', async () => {
+            // Set quantity to 0
+            await db.query('UPDATE sweets SET quantity = 0 WHERE id = $1', [sweetId]);
+
+            const res = await request(app)
+                .post(`/api/sweets/${sweetId}/purchase`)
+                .set('Authorization', `Bearer ${userToken}`);
+            
+            expect(res.statusCode).toEqual(400);
+            expect(res.body.message).toBe('Sweet is out of stock');
+        });
+    });
+
+    // POST /api/sweets/:id/restock
+    describe('POST /api/sweets/:id/restock', () => {
+        let sweetId;
+        beforeEach(async () => {
+            const result = await db.query("INSERT INTO sweets (name, category, price, quantity) VALUES ('Gummy Worm', 'Candy', 1.50, 5) RETURNING id");
+            sweetId = result.rows[0].id;
+        });
+
+        it('should increase the quantity of a sweet (admin only)', async () => {
+            const res = await request(app)
+                .post(`/api/sweets/${sweetId}/restock`)
+                .set('Authorization', `Bearer ${adminToken}`)
+                .send({ amount: 20 });
+            
+            expect(res.statusCode).toEqual(200);
+            expect(res.body.quantity).toBe(25);
+        });
+
+        it('should return 403 if a regular user tries to restock', async () => {
+            const res = await request(app)
+                .post(`/api/sweets/${sweetId}/restock`)
+                .set('Authorization', `Bearer ${userToken}`)
+                .send({ amount: 20 });
+
+            expect(res.statusCode).toEqual(403);
+        });
+    });
+
 });
