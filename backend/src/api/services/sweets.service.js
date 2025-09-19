@@ -22,4 +22,9 @@ const updateSweetById = async (id, sweetData) => {
     return result.rows[0]; // Will be undefined if ID not found
 };
 
-module.exports = { findAllSweets, createSweet, updateSweetById };
+const deleteSweetById = async (id) => {
+    const result = await db.query('DELETE FROM sweets WHERE id = $1 RETURNING id', [id]);
+    return result.rowCount; // Returns 1 if successful, 0 if not found
+};
+
+module.exports = { findAllSweets, createSweet, updateSweetById, deleteSweetById };
