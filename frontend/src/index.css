@@ -1,17 +1,302 @@
-body {
+/* Import a modern, friendly font from Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap');
+
+/* --- THEME DEFINITION (CSS Variables) --- */
+:root {
+  --color-background: #FFF8F6; /* A very light, creamy pink */
+  --color-text: #444;
+  --color-primary: #E91E63; /* A vibrant pink for accents */
+  --color-primary-dark: #C2185B;
+  --color-secondary: #5D4037; /* A rich chocolate brown */
+  --color-white: #FFFFFF;
+  --color-light-gray: #f4f4f4;
+  --color-medium-gray: #ddd;
+  --color-red: #f44336;
+  --color-orange: #ff9800;
+  --color-blue: #2196F3;
+  --shadow-light: 0 4px 6px rgba(0, 0, 0, 0.05);
+  --shadow-medium: 0 5px 15px rgba(0, 0, 0, 0.1);
+  --border-radius: 8px;
+}
+
+/* --- GLOBAL RESETS & STYLES --- */
+* {
+  box-sizing: border-box;
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  background-color: #f4f4f9;
+  padding: 0;
+}
+
+body {
+  font-family: 'Nunito', sans-serif;
+  background-color: var(--color-background);
+  color: var(--color-text);
+  line-height: 1.6;
+}
+
+.app-container {
+  padding: 1rem 2rem;
+}
+
+h1, h2, h3 {
+  color: var(--color-secondary);
+  margin-bottom: 0.5rem;
+}
+
+a {
+  text-decoration: none;
+  color: var(--color-primary);
+}
+
+/* --- GLOBAL FORM & BUTTON STYLES --- */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"] {
+  padding: 0.75rem;
+  border: 1px solid var(--color-medium-gray);
+  border-radius: var(--border-radius);
+  font-family: inherit;
+  font-size: 1rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(233, 30, 99, 0.2);
 }
 
 button {
-  cursor: pointer;
+  padding: 0.75rem 1.25rem;
   font-family: inherit;
-  padding: 8px 12px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: var(--border-radius);
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.1s;
+}
+
+button:hover {
+  transform: translateY(-2px);
+}
+
+button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.button--primary {
+  background-color: var(--color-primary);
+  color: var(--color-white);
+}
+
+.button--primary:hover {
+  background-color: var(--color-primary-dark);
+}
+
+.button--secondary {
+  background-color: var(--color-light-gray);
+  color: var(--color-text);
+}
+
+
+/* --- NAVBAR --- */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background: var(--color-white);
+  box-shadow: var(--shadow-light);
+}
+
+.navbar__brand h2 {
+  margin: 0;
+  color: var(--color-primary);
+}
+
+.navbar__links {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.navbar__links a {
+  font-weight: 600;
+}
+
+.navbar__links span {
+  font-weight: 600;
+  color: var(--color-secondary);
+}
+
+/* --- AUTH FORMS (Login/Register) --- */
+.auth-form-container {
+  max-width: 400px;
+  margin: 4rem auto;
+  padding: 2rem;
+  background: var(--color-white);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-medium);
+}
+
+.auth-form-container h2 {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+/* --- DASHBOARD --- */
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.sweets-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 2rem;
+}
+
+/* --- SWEET CARD --- */
+.sweet-card {
+  background: var(--color-white);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-light);
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.sweet-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-medium);
+}
+
+.sweet-card__image-placeholder {
+  height: 150px;
+  background-color: var(--color-primary);
+  background-image: linear-gradient(45deg, rgba(255,255,255,0.1) 25%, transparent 25%, transparent 50%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.1) 75%, transparent 75%, transparent);
+  background-size: 40px 40px;
+}
+
+.sweet-card__content {
+  padding: 1.5rem;
+}
+
+.sweet-card__name {
+  margin: 0 0 0.5rem;
+}
+
+.sweet-card__details {
+  font-size: 0.9rem;
+  color: #777;
+  margin-bottom: 1rem;
+}
+
+.sweet-card__price {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  margin-bottom: 1rem;
+}
+
+.sweet-card__stock {
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  color: var(--color-secondary);
+}
+
+.sweet-card__stock--out {
+  color: var(--color-red);
+}
+
+.sweet-card__actions {
+  width: 100%;
+}
+
+.sweet-card__admin-actions {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--color-light-gray);
+  display: flex;
+  gap: 0.5rem;
+}
+
+.button--admin-edit {
+  background-color: var(--color-orange); color: white; flex-grow: 1;
+}
+.button--admin-delete {
+  background-color: var(--color-red); color: white; flex-grow: 1;
+}
+
+/* 
+  --- SEARCH FILTER (THE FIX IS HERE) --- 
+*/
+.search-filter {
+  /* This turns the form itself into a flex container */
+  display: flex; 
+  
+  /* This tells the children (input groups, button) to arrange in a row */
+  flex-direction: row;
+
+  /* This allows items to wrap to the next line on smaller screens */
+  flex-wrap: wrap; 
+  
+  /* This centers the group of items horizontally in the container */
+  justify-content: center; 
+  
+  /* This aligns the items along their bottom edges for a clean look */
+  align-items: flex-end; 
+  
+  /* This adds space between each item */
+  gap: 1.5rem; 
+
+  /* Overriding the default form direction */
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background-color: var(--color-white);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-light);
+}
+
+
+/* --- MODAL --- */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: var(--color-white);
+  padding: 2rem;
+  border-radius: var(--border-radius);
+  width: 90%;
+  max-width: 450px;
+  box-shadow: var(--shadow-medium);
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1rem;
 }

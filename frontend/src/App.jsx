@@ -7,9 +7,9 @@ import RegisterPage from './pages/RegisterPage';
 
 function App() {
   return (
-    <div>
+    <>
       <Navbar />
-      <div style={{ padding: '2rem' }}>
+      <main className="app-container">
         <Routes>
           <Route
             path="/"
@@ -22,8 +22,8 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
         </Routes>
-      </div>
-    </div>
+      </main>
+    </>
   );
 }
 

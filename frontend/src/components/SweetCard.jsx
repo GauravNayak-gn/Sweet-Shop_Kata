@@ -1,57 +1,60 @@
 import api from '../services/api';
 import useAuth from '../hooks/useAuth';
 
-const cardStyle = {
-    border: '1px solid #ddd',
-    borderRadius: '8px',
-    padding: '1rem',
-    margin: '1rem',
-    width: '250px',
-    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-};
+const SweetCard = ({ sweet, onPurchase, onDelete, onEdit }) => {
+    const { user } = useAuth();
 
-const SweetCard = ({ sweet, onPurchase,onDelete, onEdit   }) => {
-    const { user } = useAuth(); // Get the current user
     const handlePurchaseClick = async () => {
         try {
             await api.post(`/sweets/${sweet.id}/purchase`);
-            onPurchase(sweet.id); // Notify the parent component to update state
+            onPurchase(sweet.id);
         } catch (error) {
-            alert('Could not complete purchase.'); // Simple error handling
+            alert('Could not complete purchase.');
         }
     };
 
-     const handleDeleteClick = async () => {
+    const handleDeleteClick = async () => {
         if (window.confirm(`Are you sure you want to delete ${sweet.name}?`)) {
             try {
                 await api.delete(`/sweets/${sweet.id}`);
-                onDelete(sweet.id); // Notify parent to update the list
+                onDelete(sweet.id);
             } catch (error) {
                 alert('Could not delete sweet.');
             }
         }
     };
 
+    const stockClass = sweet.quantity > 0 ? 'sweet-card__stock' : 'sweet-card__stock sweet-card__stock--out';
+    const stockText = sweet.quantity > 0 ? `${sweet.quantity} in stock` : 'Out of Stock';
+
     return (
-        <div style={cardStyle}>
-            <h3>{sweet.name}</h3>
-            <p><strong>Category:</strong> {sweet.category}</p>
-            <p><strong>Price:</strong> ${sweet.price}</p>
-            <p><strong>In Stock:</strong> {sweet.quantity}</p>
-            <button onClick={handlePurchaseClick} disabled={sweet.quantity === 0}>
-                Purchase
-            </button>
-            {/* --- Admin Section --- */}
-            {user?.role === 'admin' && (
-                <div style={{ marginTop: '1rem', borderTop: '1px solid #eee', paddingTop: '0.5rem', display: 'flex', gap: '0.5rem' }}>
-                    <button style={{ backgroundColor: '#ff9800', color: 'white' }} onClick={onEdit}>
-                        Edit
-                    </button>
-                    <button style={{ backgroundColor: '#f44336', color: 'white' }} onClick={handleDeleteClick}>
-                        Delete
-                    </button>
-                </div>
-            )}
+        <div className="sweet-card">
+            <div className="sweet-card__image-placeholder"></div>
+            <div className="sweet-card__content">
+                <h3 className="sweet-card__name">{sweet.name}</h3>
+                <p className="sweet-card__details">Category: {sweet.category}</p>
+                <p className="sweet-card__price">${parseFloat(sweet.price).toFixed(2)}</p>
+                <p className={stockClass}>{stockText}</p>
+                
+                <button
+                    onClick={handlePurchaseClick}
+                    disabled={sweet.quantity === 0}
+                    className="sweet-card__actions button--primary"
+                >
+                    Purchase
+                </button>
+                
+                {user?.role === 'admin' && (
+                    <div className="sweet-card__admin-actions">
+                        <button className="button--admin-edit" onClick={onEdit}>
+                            Edit
+                        </button>
+                        <button className="button--admin-delete" onClick={handleDeleteClick}>
+                            Delete
+                        </button>
+                    </div>
+                )}
+            </div>
         </div>
     );
 };

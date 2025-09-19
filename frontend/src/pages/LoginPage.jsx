@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import useAuth from '../hooks/useAuth';
 
 const LoginPage = () => {
@@ -21,19 +21,22 @@ const LoginPage = () => {
     };
 
     return (
-        <div>
+        <div className="auth-form-container">
             <h2>Login</h2>
             <form onSubmit={handleSubmit}>
-                <div>
-                    <label>Email:</label>
+                <div className="input-group">
+                    <label>Email Address</label>
                     <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
                 </div>
-                <div>
-                    <label>Password:</label>
+                <div className="input-group">
+                    <label>Password</label>
                     <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
                 </div>
-                {error && <p style={{ color: 'red' }}>{error}</p>}
-                <button type="submit">Login</button>
+                {error && <p style={{ color: 'var(--color-red)' }}>{error}</p>}
+                <button type="submit" className="button--primary">Login</button>
+                <p style={{ textAlign: 'center' }}>
+                    Don't have an account? <Link to="/register">Sign Up</Link>
+                </p>
             </form>
         </div>
     );

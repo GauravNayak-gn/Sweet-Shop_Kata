@@ -1,22 +1,5 @@
 import { useState } from 'react';
 
-const searchContainerStyle = {
-    padding: '1rem',
-    margin: '1rem auto',
-    backgroundColor: '#fff',
-    borderRadius: '8px',
-    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-    display: 'flex',
-    gap: '1rem',
-    justifyContent: 'center',
-    flexWrap: 'wrap',
-};
-
-const inputGroupStyle = {
-    display: 'flex',
-    flexDirection: 'column',
-};
-
 const SearchFilter = ({ onSearch }) => {
     const [name, setName] = useState('');
     const [category, setCategory] = useState('');
@@ -28,20 +11,35 @@ const SearchFilter = ({ onSearch }) => {
     };
 
     return (
-        <form onSubmit={handleSearch} style={searchContainerStyle}>
-            <div style={inputGroupStyle}>
+        <form onSubmit={handleSearch} className="search-filter">
+            <div className="input-group">
                 <label>Name</label>
-                <input type="text" placeholder="e.g., Chocolate" value={name} onChange={e => setName(e.target.value)} />
+                <input 
+                    type="text" 
+                    placeholder="e.g., Chocolate" 
+                    value={name} 
+                    onChange={e => setName(e.target.value)} 
+                />
             </div>
-            <div style={inputGroupStyle}>
+            <div className="input-group">
                 <label>Category</label>
-                <input type="text" placeholder="e.g., Candy" value={category} onChange={e => setCategory(e.target.value)} />
+                <input 
+                    type="text" 
+                    placeholder="e.g., Candy" 
+                    value={category} 
+                    onChange={e => setCategory(e.target.value)} 
+                />
             </div>
-            <div style={inputGroupStyle}>
+            <div className="input-group">
                 <label>Max Price</label>
-                <input type="number" placeholder="e.g., 5" value={maxPrice} onChange={e => setMaxPrice(e.target.value)} />
+                <input 
+                    type="number" 
+                    placeholder="e.g., 5" 
+                    value={maxPrice} 
+                    onChange={e => setMaxPrice(e.target.value)} 
+                />
             </div>
-            <button type="submit">Search</button>
+            <button type="submit" className="button--primary">Search</button>
         </form>
     );
 };
