@@ -166,4 +166,55 @@ describe('Sweets API', () => {
             expect(res.statusCode).toEqual(404);
         });
     });
+
+    // GET /api/sweets/search
+    describe('GET /api/sweets/search', () => {
+        beforeEach(async () => {
+            // Seed the database with some sweets for searching
+            await db.query("INSERT INTO sweets (name, category, price, quantity) VALUES ('Gummy Bear', 'Candy', 1.99, 100)");
+            await db.query("INSERT INTO sweets (name, category, price, quantity) VALUES ('Milk Chocolate', 'Chocolate', 3.50, 50)");
+            await db.query("INSERT INTO sweets (name, category, price, quantity) VALUES ('Dark Chocolate', 'Chocolate', 4.00, 30)");
+            await db.query("INSERT INTO sweets (name, category, price, quantity) VALUES ('Lollipop', 'Candy', 0.99, 200)");
+        });
+
+        it('should find sweets by name (case-insensitive)', async () => {
+            const res = await request(app)
+                .get('/api/sweets/search?name=chocolate')
+                .set('Authorization', `Bearer ${userToken}`);
+            
+            expect(res.statusCode).toEqual(200);
+            expect(res.body.length).toBe(2);
+            expect(res.body[0].name).toBe('Dark Chocolate'); // Assuming default order
+            expect(res.body[1].name).toBe('Milk Chocolate');
+        });
+
+        it('should find sweets by category', async () => {
+            const res = await request(app)
+                .get('/api/sweets/search?category=Candy')
+                .set('Authorization', `Bearer ${userToken}`);
+            
+            expect(res.statusCode).toEqual(200);
+            expect(res.body.length).toBe(2);
+        });
+
+        it('should find sweets within a price range', async () => {
+            const res = await request(app)
+                .get('/api/sweets/search?minPrice=1.00&maxPrice=3.50')
+                .set('Authorization', `Bearer ${userToken}`);
+            
+            expect(res.statusCode).toEqual(200);
+            expect(res.body.length).toBe(2); // Gummy Bear and Milk Chocolate
+        });
+
+        it('should combine search filters', async () => {
+            const res = await request(app)
+                .get('/api/sweets/search?category=Chocolate&maxPrice=3.50')
+                .set('Authorization', `Bearer ${userToken}`);
+            
+            expect(res.statusCode).toEqual(200);
+            expect(res.body.length).toBe(1);
+            expect(res.body[0].name).toBe('Milk Chocolate');
+        });
+    });
+
 });
