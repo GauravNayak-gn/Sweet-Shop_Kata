@@ -78,4 +78,51 @@ describe('Sweets API', () => {
             expect(res.statusCode).toEqual(403);
         });
     });
+
+    describe('PUT /api/sweets/:id', () => {
+        let sweetId;
+
+        beforeEach(async () => {
+            const result = await db.query("INSERT INTO sweets (name, category, price, quantity) VALUES ('Old Candy', 'Vintage', 5.00, 10) RETURNING id");
+            sweetId = result.rows[0].id;
+        });
+        
+        it('should return 403 if a regular user tries to update', async () => {
+            const res = await request(app)
+                .put(`/api/sweets/${sweetId}`)
+                .set('Authorization', `Bearer ${userToken}`)
+                .send({ name: 'New Name', price: 6.00 });
+            
+            expect(res.statusCode).toEqual(403);
+        });
+
+        it('should update a sweet if user is an admin', async () => {
+            const updatedData = {
+                name: 'Updated Candy',
+                category: 'Modern',
+                price: 5.50,
+                quantity: 15
+            };
+
+            const res = await request(app)
+                .put(`/api/sweets/${sweetId}`)
+                .set('Authorization', `Bearer ${adminToken}`)
+                .send(updatedData);
+            
+            expect(res.statusCode).toEqual(200);
+            expect(res.body.name).toBe('Updated Candy');
+            expect(res.body.price).toBe('5.50'); // Note: pg returns decimal as string
+            expect(res.body.quantity).toBe(15);
+        });
+
+        it('should return 404 if sweet ID does not exist', async () => {
+            const nonExistentId = 9999;
+            const res = await request(app)
+                .put(`/api/sweets/${nonExistentId}`)
+                .set('Authorization', `Bearer ${adminToken}`)
+                .send({ name: 'Ghost Candy' });
+            
+            expect(res.statusCode).toEqual(404);
+        });
+    });
 });
